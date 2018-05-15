@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+    <ui:composition template="/templates/default/main.xhtml">
+        <ui:define name="headerContent">
+            <h1>
+                Daftar Riwayat Pengajuan RPTK
+            </h1>
+        </ui:define>
+        <ui:define name="content">
+            <!--Main table-->
+            <div class="box">
+                <!--Search form-->
+                <h:form id="searchForm">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="box">
+                                <div class="box-header with-border">
+                                    <h3 data-widget="collapse" class="box-title pointer">Filter Pencarian</h3>
+                                    <div class="box-tools pull-right">
+                                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                    </div>
+                                </div>
+                                <div class="box-body">
+                                    <div class="col-sm-12">
+                                        <div class="col-sm-2">
+                                            <h:selectOneMenu id="optionSearch" value="#{pengajuanRPTK.optionSearch}" class="form-control">
+                                                <f:selectItem itemLabel="No. Pengajuan" itemValue="noPengajuan"/>
+                                                <f:selectItem itemLabel="No. Surat" itemValue="noSurat"/>
+                                                <f:selectItem itemLabel="Jenis KKKS" itemValue="jenisKkks"/>
+                                                <f:selectItem itemLabel="Status" itemValue="status"/>
+                                            </h:selectOneMenu>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <h:inputText class="form-control" value="#{pengajuanRPTK.searchForm}"/>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <p:commandButton value="Cari"
+                                                             class="btn btn-primary btn-sm btn-flat"
+                                                             actionListener="#{pengajuanRPTK.search()}"
+                                                             update=":listDisplay"
+                                                             icon="fa fa-search" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+                <div style="overflow-x: scroll">
+                    <div class="box-body table-responsive" style="width: 2500px">
+                        <h:form id="listDisplay">
+                            <p:dataTable var="item"
+                                         styleClass="table table-hover table-bordered"
+                                         value="#{pengajuanRPTK.modelRiwayat}" reflow="true" rows="10"
+                                         filteredValue="#{pengajuanRPTK.filteredModelRiwayat}"
+                                         paginatorPosition="bottom"
+                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                         paginator="true" rowIndexVar="index"
+                                         tableStyle="table-layout:auto">
+                                <p:column headerText="No" width="30">
+                                    #{index + 1}
+                                </p:column>
+                                <p:column sortBy="#{item.noPengajuan}"
+                                          filterBy="#{item.noPengajuan}" 
+                                          headerText="No Pengajuan" 
+
+                                          filterMatchMode="contains">
+
+                                    #{item.noPengajuan}
+                                </p:column>
+                                <p:column sortBy="#{item.tglSurat}"
+                                          filterBy="#{item.tglSurat}" 
+                                          headerText="Tanggal Surat" 
+                                          filterMatchMode="contains">
+                                    <h:outputText value="#{item.tglSurat}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy" />
+                                    </h:outputText>
+                                </p:column>
+                                <p:column sortBy="#{item.noSurat}"
+                                          filterBy="#{item.noSurat}" 
+                                          headerText="No. Surat" 
+                                          filterMatchMode="contains">
+                                    #{item.noSurat}    					
+                                </p:column>
+                                <p:column sortBy="#{item.perihalSurat}"
+                                          filterBy="#{item.perihalSurat}" 
+                                          headerText="Perihal" 
+
+                                          filterMatchMode="contains">
+
+                                    #{item.perihalSurat}    					
+                                </p:column>
+                                <p:column sortBy="#{item.jenisKkks}"
+                                          filterBy="#{item.jenisKkks}" 
+                                          headerText="Jenis KKKS" 
+
+                                          filterMatchMode="contains">
+
+                                    #{item.jenisKkks}                        
+                                </p:column>
+                                <p:column sortBy="#{item.type}"
+                                          filterBy="#{item.type}" 
+                                          headerText="Type" 
+                                          filterMatchMode="contains">
+                                    #{item.type}
+                                </p:column>
+                                <p:column sortBy="#{item.createdDate}" style="text-align: center;">
+                                    <f:facet name="header">
+                                        Waktu Pengajuan
+                                    </f:facet>
+                                    <h:outputText value="#{item.createdDate}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy hh:mm:ss" />
+                                    </h:outputText>
+                                </p:column>
+                                <p:column style="text-align: center;" sortBy="#{pengajuanRPTK.statusMask(item.status)}"
+                                          filterBy="#{pengajuanRPTK.statusMask(item.status)}" 
+                                          headerText="Status" 
+                                          filterMatchMode="contains">
+                                    <f:facet name="header">
+                                        Status
+                                    </f:facet>
+                                    #{pengajuanRPTK.statusMask(item.status)}
+                                </p:column>
+                                <p:column style="text-align: center;">
+                                    <f:facet name="header">
+                                        Posisi Tenaga Kerja
+                                    </f:facet>
+                                    <h:commandButton value="Lihat" class="btn btn-link" action="#{pengajuanRPTK.viewPosisi(item.rptk.id_rptk)}"/>
+                                </p:column>
+                                <p:column style="text-align: center;">
+                                    <f:facet name="header">
+                                        Download Surat dari SKK Migas
+                                    </f:facet>
+                                    <h:commandButton action="#{pengajuanRPTK.handleClickSurat(item.noPengajuan,item.suratPersetujuan,item.suratRekomendasi)}" value="Lihat" class="btn btn-link" 
+                                                     rendered="#{item.suratPersetujuan ne null or 
+                                                                 item.suratRekomendasi ne null}"/>
+                                    <h:outputText value="-" 
+                                                  rendered="#{item.suratPersetujuan eq null and 
+                                                              item.suratRekomendasi eq null}"/>
+                                </p:column>
+                                <p:column style="text-align: center;">
+                                    <f:facet name="header">
+                                        Upload Surat ke SKK Migas
+                                    </f:facet>
+                                    <h:commandButton action="#{pengajuanRPTK.viewUploadSurat(item.noPengajuan)}" value="Lihat" class="btn btn-link" rendered="#{item.status eq 'Disetujui Sebagian (Lengkap)' or item.status eq 'Disetujui Final (Lengkap)' or item.status eq 'Closed'}"/>
+                                    <h:outputText value="-" 
+                                                  rendered="#{item.status ne 'Disetujui Sebagian (Lengkap)' and item.status ne 'Disetujui Final (Lengkap)' and item.status ne 'Closed'}"/>
+                                </p:column>
+                                <p:column style="text-align: center;">
+                                    <f:facet name="header">
+                                        Detail Rptk
+                                    </f:facet>
+                                    <h:commandButton action="#{pengajuanRPTK.goToDetailRptk}" 
+                                                     value="Lihat" 
+                                                     class="btn btn-link">
+                                        <f:setPropertyActionListener target="#{detailRptk.idPengajuanRptk}" value="#{item.idPengajuan}" />
+                                    </h:commandButton>
+                                </p:column>
+                                <p:column style="text-align: center;">
+                                    <f:facet name="header">
+                                        Aksi
+                                    </f:facet>
+                                    <h:commandButton action="#{pengajuanRPTK.viewPerbaikan(item.idPengajuan)}" value="Perbaiki" class="btn btn-link" rendered="#{item.status eq 'Diminta Perbaikan'}"/>
+                                    <h:commandButton action="#{pengajuanRPTK.submitAndUpdate(item.idPengajuan)}" value="Submit dan Update" class="btn btn-link" rendered="#{item.status eq 'Disetujui Sebagian (Lengkap)'}"/>
+                                    <h:commandButton action="#{pengajuanRPTK.viewRevisi(item.idPengajuan)}" value="Revisi" class="btn btn-link" rendered="#{item.status eq 'Disetujui Final (Lengkap)'}"/>
+                                    <h:commandButton action="#{pengajuanRPTK.viewUploadSurat(item.noPengajuan)}" value="Upload Surat" class="btn btn-link" rendered="#{item.status eq 'Disetujui Sebagian (Belum Upload)' or item.status eq 'Disetujui Final (Belum Upload)'}"/>
+                                    <h:outputText value="-" rendered="#{item.status ne 'Diminta Perbaikan' and item.status ne 'Disetujui Sebagian (Lengkap)' and item.status ne 'Disetujui Final (Lengkap)' and item.status ne 'Disetujui Sebagian (Belum Upload)' and item.status ne 'Disetujui Final (Belum Upload)'}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </h:form>
+                    </div>
+                </div>
+            </div>
+            <h:form id="formDownload">
+                <p:dialog header="Surat - #{pengajuanRPTK.selectedNoPengajuan}" widgetVar="downloadDialog" modal="true" >
+                    <h:panelGroup id="fileDownloadContainer" class="text-left" >
+                        <table style="width: 100%">
+                            <tr>
+                                <td>Surat Persetujuan
+                                </td>
+                                <td align="center">
+                                    <h:commandButton class="btn btn-link"
+                                                     actionListener="#{pengajuanRPTK.unduh(pengajuanRPTK.selectedFullPathSuratPersetujuan)}"
+                                                     value="#{pengajuanRPTK.selectedNameSuratPersetujuan}"
+                                                     rendered="#{pengajuanRPTK.selectedNameSuratPersetujuan ne '-'}">
+                                    </h:commandButton>
+
+                                    <h:outputText  value="-" rendered="#{pengajuanRPTK.selectedNameSuratPersetujuan eq '-'}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Surat Rekomendasi
+                                </td>
+
+                                <td align="center">
+                                    <h:commandButton class="btn btn-link"
+                                                     actionListener="#{pengajuanRPTK.unduh(pengajuanRPTK.selectedFullPathSuratRekomendasi)}"
+                                                     value="#{pengajuanRPTK.selectedNameSuratRekomendasi}"
+                                                     rendered="#{pengajuanRPTK.selectedNameSuratRekomendasi ne '-'}">
+                                    </h:commandButton>
+                                    <h:outputText  value="-" rendered="#{pengajuanRPTK.selectedNameSuratRekomendasi eq '-'}"/>
+
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="3" align="center">
+                                    <p:commandButton value="Close" onclick="PF('downloadDialog').hide();">
+                                    </p:commandButton>
+                                </td>
+                            </tr>
+                        </table>
+                    </h:panelGroup>
+                </p:dialog> 
+            </h:form>
+            <p:dialog id="dialogRevisi" header="Pengajuan Lanjutan RPTK" widgetVar="suksesDialog"
+                      modal="true" height="100" width="300" resizable="false" draggable="false" closable="false" >
+                <h:outputText value="Pengajuan Lanjutan RPTK Berhasil." style="margin-left: 70px; margin-top:100px;"/><br/>
+                <h:outputText value="No Pengajuan #{pengajuanRPTK.noRevisiBaru}" style="margin-left: 10px;"/><br/><br/>
+                <p:commandButton value="OK" action="#{pengajuanRPTK.viewAll}" style="margin-left: 100px;"/>
+            </p:dialog>
+        </ui:define>
+    </ui:composition>
+</html>

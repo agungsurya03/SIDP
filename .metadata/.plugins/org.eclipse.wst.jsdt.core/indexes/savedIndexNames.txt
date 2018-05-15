@@ -1,0 +1,9 @@
+INDEX VERSION 1.4+D:\BGS\SKKMIGAS\RPTK_v1ts\.metadata\.plugins\org.eclipse.wst.jsdt.core\indexes
+2061707979.index
+4252897531.index
+1571586173.index
+3299201479.index
+1306125702.index
+2759582873.index
+1252890972.index
+4219068035.index

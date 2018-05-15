@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <!--    <f:metadata>
+            <f:event listener="{tkaBean.loadOnce(globalBean.filterKkksDefault)}" type="preRenderView"></f:event>
+        </f:metadata>-->
+    <ui:composition template="../mainLayout.xhtml">
+        <ui:define name="content">
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    $('.double-scroll').doubleScroll();
+                });
+            </script>
+            <style>
+                .double-scroll{
+                    width: auto;
+                }
+            </style>
+            <f:event listener="#{tkaBean.loadOnce(globalBean.filterKkksDefault)}" type="preRenderView"></f:event>
+            <p:dialog id="delete" appendTo="@(body)" header="Konfirmasi" widgetVar="delete" modal="true">
+                <h:form>
+                    <h:outputText value="Apa anda yakin akan menghapus?"/><br/><br/>
+                    <p:commandButton value="Hapus" ajax="false" action="#{tkaBean.delete()}">
+                    </p:commandButton>
+                    <p:commandButton value="Batal" onclick="PF('delete').hide();">
+                    </p:commandButton>
+                </h:form>
+            </p:dialog>
+            <p:dialog appendTo="@(body)" header="Import TKA" closable="false" widgetVar="loading" modal="true">
+                <h:outputText value="Data TKA sedang diimpor. Silakan tunggu beberapa saat. Harap tidak melakukan reload page."/>
+                <p:progressBar widgetVar="pbAjax" ajax="true" value="#{tkaSpreadsheet.loading}"/>
+            </p:dialog> 
+            <p:dialog appendTo="@(body)" header="Pilih file spreadsheet" widgetVar="import" modal="true">
+                <h:form enctype="multipart/form-data">
+                    <h:outputText value="Maksimal impor 2000 baris data dalam satu waktu."/><br/><br/>
+                    <p:fileUpload value="#{tkaSpreadsheet.tkafile}" mode="simple" allowTypes="/(\.|\/)(xls?x?)$/"/><br/>
+                    <p:commandButton value="Submit" ajax="false" action="#{tkaSpreadsheet.importTka2(globalBean.filterKkksDefault)}" onclick="PF('import').hide();PF('loading').show();PF('pbAjax').start();">
+                    </p:commandButton>
+                </h:form>
+            </p:dialog>  
+            <div class="page-header">
+                <h1>TKA<small> Daftar</small></h1>
+            </div>
+            <h:form id="allform">
+                <p:commandButton class="ovr-btn-primary" value="Buat TKA Baru" action="#{globalBean.newTka}">
+                </p:commandButton>
+                <p:menuButton rendered="#{globalBean.filterKkksDefault gt -1}" value="Impor">
+                    <p:menuitem value="Impor data TKA" onclick="PF('import').show();"></p:menuitem>
+                    <p:menuitem value="Download Template" ajax="false" onclick="setTimeout(stop,500)">
+                        <p:fileDownload value="#{tkaBean.file}" />
+                    </p:menuitem>
+                </p:menuButton>
+                <p:commandButton id="imageBtn" icon="ui-icon-triangle-1-s" value="Kolom" type="button" />
+                <p:commandButton icon="ui-icon-search" rendered="#{globalBean.role eq 'skk'}" value="#{globalBean.filterNamaKkks}" actionListener="#{globalBean.openKkksPicker()}">
+                    <p:ajax event="dialogReturn" listener="#{globalBean.pickKkks}" update="allform" />
+                    <p:ajax event="dialogReturn" listener="#{tkaBean.fetchCollection(globalBean.filterKkksDefault)}" update="allform" />
+                </p:commandButton>
+                <p:commandButton rendered="#{globalBean.filterKkksDefault gt -1}" class="ovr-btn-delete" value="Hapus" onclick="PF('delete').show();">
+                </p:commandButton>
+                <p:overlayPanel id="imagePanel" for="imageBtn">
+                    <h:panelGrid columns="2">
+
+                        <h:outputText value="NIP" />
+                        <p:inputSwitch onLabel="" offLabel="" value="#{tkaBean.showNip}">
+                            <p:ajax update="tka_table" />
+                        </p:inputSwitch>
+                        <h:outputText value="Nama TKA (awal)" />
+                        <p:inputSwitch onLabel="" offLabel="" value="#{tkaBean.showNamaTkaAwal}">
+                            <p:ajax update="tka_table" />
+                        </p:inputSwitch>
+                        <h:outputText value="Nama TKA (tengah)" />
+                        <p:inputSwitch onLabel="" offLabel="" value="#{tkaBean.shownamaTkaTengah}">
+                            <p:ajax update="tka_table" />
+                        </p:inputSwitch>
+                        <h:outputText value="Nama TKA (akhir)" />
+                        <p:inputSwitch onLabel="" offLabel="" value="#{tkaBean.showNamaTkaAkhir}">
+                            <p:ajax update="tka_table" />
+                        </p:inputSwitch>
+                        <h:outputText value="Nama pada Org. Chart" />
+                        <p:inputSwitch onLabel="" offLabel="" value="#{tkaBean.showAlias}">
+                            <p:ajax update="tka_table" />
+                        </p:inputSwitch>
+                        <h:outputText value="Alamat" />
+                        <p:inputSwitch onLabel="" offLabel="" value="#{tkaBean.showAlamat}">
+                            <p:ajax update="tka_table" />
+                        </p:inputSwitch>
+                        <h:outputText value="Warganegara" />
+                        <p:inputSwitch onLabel="" offLabel="" value="#{tkaBean.showWarganegara}">
+                            <p:ajax update="tka_table" />
+                        </p:inputSwitch>
+                        <h:outputText value="Tempat Lahir" />
+                        <p:inputSwitch onLabel="" offLabel="" value="#{tkaBean.showTempatLahir}">
+                            <p:ajax update="tka_table" />
+                        </p:inputSwitch>
+                        <h:outputText value="Tanggal Lahir" />
+                        <p:inputSwitch onLabel="" offLabel="" value="#{tkaBean.showTanggalLahir}">
+                            <p:ajax update="tka_table" />
+                        </p:inputSwitch>
+                        <h:outputText value="Jenis Kelamin" />
+                        <p:inputSwitch onLabel="" offLabel="" value="#{tkaBean.showJenisKelamin}">
+                            <p:ajax update="tka_table" />
+                        </p:inputSwitch>
+                        <h:outputText value="Nomor Passport" />
+                        <p:inputSwitch onLabel="" offLabel="" value="#{tkaBean.showNomorPassport}">
+                            <p:ajax update="tka_table" />
+                        </p:inputSwitch>
+                        <h:outputText value="Pendidikan 1" />
+                        <p:inputSwitch onLabel="" offLabel="" value="#{tkaBean.showPendidikan1}">
+                            <p:ajax update="tka_table" />
+                        </p:inputSwitch>
+                        <h:outputText value="Jurusan 1" />
+                        <p:inputSwitch onLabel="" offLabel="" value="#{tkaBean.showJenis1}">
+                            <p:ajax update="tka_table" />
+                        </p:inputSwitch>
+                        <h:outputText value="Institusi Pendidikan 1" />
+                        <p:inputSwitch onLabel="" offLabel="" value="#{tkaBean.showKetPendidikan1}">
+                            <p:ajax update="tka_table" />
+                        </p:inputSwitch>
+                        <h:outputText value="Pendidikan 2" />
+                        <p:inputSwitch onLabel="" offLabel="" value="#{tkaBean.showPendidikan2}">
+                            <p:ajax update="tka_table" />
+                        </p:inputSwitch>
+                        <h:outputText value="Jurusan 2" />
+                        <p:inputSwitch onLabel="" offLabel="" value="#{tkaBean.showJenis2}">
+                            <p:ajax update="tka_table" />
+                        </p:inputSwitch>
+                        <h:outputText value="Institusi Pendidikan 2" />
+                        <p:inputSwitch onLabel="" offLabel="" value="#{tkaBean.showKetPendidikan2}">
+                            <p:ajax update="tka_table" />
+                        </p:inputSwitch>
+                        <h:outputText value="Pendidikan 3" />
+                        <p:inputSwitch onLabel="" offLabel="" value="#{tkaBean.showPendidikan3}">
+                            <p:ajax update="tka_table" />
+                        </p:inputSwitch>
+                        <h:outputText value="Jurusan 3" />
+                        <p:inputSwitch onLabel="" offLabel="" value="#{tkaBean.showJenis3}">
+                            <p:ajax update="tka_table" />
+                        </p:inputSwitch>
+                        <h:outputText value="Institusi Pendidikan 3" />
+                        <p:inputSwitch onLabel="" offLabel="" value="#{tkaBean.showKetPendidikan3}">
+                            <p:ajax update="tka_table" />
+                        </p:inputSwitch>
+                        <h:outputText value="Pengalaman Kerja 1" />
+                        <p:inputSwitch onLabel="" offLabel="" value="#{tkaBean.showPengalaman1}">
+                            <p:ajax update="tka_table" />
+                        </p:inputSwitch>
+                        <h:outputText value="Status" />
+                        <p:inputSwitch onLabel="" offLabel="" value="#{tkaBean.showStatus}">
+                            <p:ajax update="tka_table" />
+                        </p:inputSwitch>
+                        <h:outputText value="Pengalaman Kerja 2" />
+                        <p:inputSwitch onLabel="" offLabel="" value="#{tkaBean.showPengalaman2}">
+                            <p:ajax update="tka_table" />
+                        </p:inputSwitch>
+                        <h:outputText value="Pengalaman Kerja 3" />
+                        <p:inputSwitch onLabel="" offLabel="" value="#{tkaBean.showPengalaman3}">
+                            <p:ajax update="tka_table" />
+                        </p:inputSwitch>
+                        <h:outputText value="Pengalaman Kerja 4" />
+                        <p:inputSwitch onLabel="" offLabel="" value="#{tkaBean.showPengalaman4}">
+                            <p:ajax update="tka_table" />
+                        </p:inputSwitch>
+                        <h:outputText value="Pengalaman Kerja 5" />
+                        <p:inputSwitch onLabel="" offLabel="" value="#{tkaBean.showPengalaman5}">
+                            <p:ajax update="tka_table" />
+                        </p:inputSwitch>
+                        <h:outputText value="Total Tahun Pengalaman" />
+                        <p:inputSwitch onLabel="" offLabel="" value="#{tkaBean.showTahunPengalaman}">
+                            <p:ajax update="tka_table" />
+                        </p:inputSwitch>
+                        <h:outputText value="Keterangan tambahan" />
+                        <p:inputSwitch onLabel="" offLabel="" value="#{tkaBean.showKetTambahan}">
+                            <p:ajax update="tka_table" />
+                        </p:inputSwitch>
+                    </h:panelGrid>
+                </p:overlayPanel>
+                <p:outputPanel rendered="#{globalBean.filterKkksDefault lt 1}" deferred="true">
+                    <br/>
+                    <p>Silakan pilih KKKS terkait terlebih dahulu</p>
+                </p:outputPanel>
+                <div class="double-scroll">
+                    <div class="box-body table-responsive" style="width: 1500px">
+                        <p:dataTable rendered="#{globalBean.filterKkksDefault gt -1}" id="tka_table" var="tka"
+                                     value="#{tkaBean.lazyTkas}" rowKey="#{tka.idTka}" selection="#{tkaBean.selectedTkas}" scrollable="true" paginator="true" rows="250"
+                                     rowIndexVar="rowIndex" widgetVar="tkaTable" tableStyle="table-layout:auto"
+                                     emptyMessage="Belum ada TKA yang bisa ditampilkan. Silakan buat TKA baru atau impor data TKA"
+                                     filteredValue=""
+                                     lazy="true"
+                                     styleClass="table table-hover table-bordered"
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}">
+                            <p:column selectionMode="multiple" style="width:40px;text-align:center"/>
+                            <p:column width="40" headerText="#">
+                                #{rowIndex+1}
+                            </p:column>
+                            <p:column rendered="#{globalBean.role eq 'skk'}" width="40" headerText="ID">
+                                <h:outputText value="#{tka.idTka}" />
+                            </p:column>
+                            <p:column rendered="#{tkaBean.showNip}" sortBy="#{tka.nip}" filterBy="#{tka.nip}" filterMatchMode="contains" headerText="NIP" width="150" >
+                                <h:outputText value="#{tka.nip.substring(tka.nip.indexOf(45) + 1)}" />
+                            </p:column>
+                            <p:column rendered="#{tkaBean.showNamaTkaAwal}" sortBy="#{tka.namaTkaAwal}" filterBy="#{tka.namaTkaAwal}" filterMatchMode="contains" headerText="Nama TKA (awal)" width="180" >
+                                <h:outputText value="#{tka.namaTkaAwal}" />
+                            </p:column>
+                            <p:column rendered="#{tkaBean.shownamaTkaTengah}" sortBy="#{tka.namaTkaTengah}" filterBy="#{tka.namaTkaTengah}" filterMatchMode="contains" headerText="Nama TKA (tengah)" width="190" >
+                                <h:outputText value="#{tka.namaTkaTengah}" />
+                            </p:column>
+                            <p:column rendered="#{tkaBean.showNamaTkaAkhir}" sortBy="#{tka.namaTkaAkhir}" filterBy="#{tka.namaTkaAkhir}" filterMatchMode="contains" headerText="Nama TKA (akhir)" width="180" >
+                                <h:outputText value="#{tka.namaTkaAkhir}" />
+                            </p:column>
+                            <p:column rendered="#{tkaBean.showAlias}" sortBy="#{tka.alias}" filterBy="#{tka.alias}" filterMatchMode="contains" headerText="Nama pada Org. Chart" style="width:210px;">
+                                <h:outputText value="#{tka.alias}" />
+                            </p:column>
+                            <p:column rendered="#{tkaBean.showAlamat}" headerText="Alamat" width="180">
+                                <h:outputText value="#{tka.alamat}" />
+                            </p:column>
+                            <p:column rendered="#{tkaBean.showWarganegara}" headerText="Warganegara" width="160">
+                                <h:outputText value="#{tka.warganegara}" />
+                            </p:column>
+                            <p:column rendered="#{tkaBean.showTempatLahir}" headerText="Tempat Lahir" width="120">
+                                <h:outputText value="#{tka.tempatLahir}" />
+                            </p:column>
+                            <p:column rendered="#{tkaBean.showTanggalLahir}" headerText="Tanggal Lahir" width="120">
+                                <h:outputText value="#{tka.tanggalLahir}" ><f:convertDateTime pattern="MM/dd/yyyy"/></h:outputText>
+                            </p:column>
+                            <p:column rendered="#{tkaBean.showJenisKelamin}" headerText="Jenis Kelamin" width="120">
+                                <h:outputText value="#{tka.jenisKelamin}" />
+                            </p:column>
+                            <p:column rendered="#{tkaBean.showNomorPassport}" headerText="Nomor Passport" width="160">
+                                <h:outputText value="#{tka.nomorPassport}" />
+                            </p:column>
+                            <p:column rendered="#{tkaBean.showPendidikan1}" headerText="Pendidikan 1" width="160">
+                                <h:outputText value="#{tka.pendidikan1}" />
+                            </p:column>
+                            <p:column rendered="#{tkaBean.showJenis1}" headerText="Jurusan 1" width="160">
+                                <h:outputText value="#{tka.jurusan1}" />
+                            </p:column>
+                            <p:column rendered="#{tkaBean.showKetPendidikan1}" headerText="Institusi Pendidikan 1" width="160">
+                                <h:outputText value="#{tka.insPendidikan1}" />
+                            </p:column>
+                            <p:column rendered="#{tkaBean.showPendidikan2}" headerText="Pendidikan 2" width="160">
+                                <h:outputText value="#{tka.pendidikan2}" />
+                            </p:column>
+                            <p:column rendered="#{tkaBean.showJenis2}" headerText="Jurusan 2" width="160">
+                                <h:outputText value="#{tka.jurusan2}" />
+                            </p:column>
+                            <p:column rendered="#{tkaBean.showKetPendidikan2}" headerText="Institusi Pendidikan 2" width="160">
+                                <h:outputText value="#{tka.insPendidikan2}" />
+                            </p:column>
+                            <p:column rendered="#{tkaBean.showPendidikan3}" headerText="Pendidikan 3" width="160">
+                                <h:outputText value="#{tka.pendidikan3}" />
+                            </p:column>
+                            <p:column rendered="#{tkaBean.showJenis3}" headerText="Jurusan 3" width="160">
+                                <h:outputText value="#{tka.jurusan3}" />
+                            </p:column>
+                            <p:column rendered="#{tkaBean.showKetPendidikan3}" headerText="Institusi Pendidikan 3" width="160">
+                                <h:outputText value="#{tka.insPendidikan3}" />
+                            </p:column>
+                            <p:column rendered="#{tkaBean.showPengalaman1}" headerText="Pengalaman Kerja 1" width="180">
+                                <h:outputText value="#{tka.pengalaman1}" />
+                            </p:column>
+                            <p:column rendered="#{tkaBean.showPengalaman2}" headerText="Pengalaman Kerja 2" width="180">
+                                <h:outputText value="#{tka.pengalaman2}" />
+                            </p:column>
+                            <p:column rendered="#{tkaBean.showPengalaman3}" headerText="Pengalaman Kerja 3" width="180">
+                                <h:outputText value="#{tka.pengalaman3}" />
+                            </p:column>
+                            <p:column rendered="#{tkaBean.showPengalaman4}" headerText="Pengalaman Kerja 4" width="180">
+                                <h:outputText value="#{tka.pengalaman4}" />
+                            </p:column>
+                            <p:column rendered="#{tkaBean.showPengalaman5}" headerText="Pengalaman Kerja 5" width="180">
+                                <h:outputText value="#{tka.pengalaman5}" />
+                            </p:column>
+                            <p:column rendered="#{tkaBean.showTahunPengalaman}" headerText="Total Tahun Pengalaman" width="180">
+                                <h:outputText value="#{tka.tahunPengalaman}" />
+                            </p:column>
+                            <p:column rendered="#{tkaBean.showStatus}" headerText="Status" width="180">
+                                <p:selectOneMenu id="namaJabatanSebelumnyaDropDown" value="#{tka.statusActive}" style="width:120px; alignment-adjust: central; margin-left:18px" disabled="true"> 
+                                    <f:selectItems value="#{tkaBean.listStatus}"/>
+                                    <p:ajax event="change" oncomplete="PF('tkaDialog').show()" update="" listener="#{tkaBean.updateStatusTemp(tka.idTka,tka.statusActive,globalBean.filterKkksDefault)}"></p:ajax>
+                                </p:selectOneMenu>
+                            </p:column>
+                            <p:column width="60" headerText="Aksi">
+                                <p:commandButton icon="ui-icon-pencil" ajax="false" action="#{globalBean.manageTka(tka.idTka)}" id="btn_edit"/>
+                                <p:tooltip for="btn_edit" id="toolTip" value="Detail TKA" trackMouse="true"/>
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                </div>
+            </h:form>
+
+            <h:form id="fdialog">
+                <p:dialog header="Anda yakin?" widgetVar="tkaDialog" modal="true" minHeight="200" minWidth="300">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="box-footer">
+                                <div class="pull-right">
+                                    <p:commandButton styleClass="btn btn-xs"
+                                                     value="Setuju"
+                                                     actionListener="#{tkaBean.updateStatus()}"
+                                                     oncomplete="PF('tkaDialog').hide()"
+                                                     update=""/>
+                                    <p:commandButton value="Tidak" 
+                                                     actionListener="#{tkaBean.cancelUpdateStatus()}"
+                                                     styleClass="btn btn-xs" 
+                                                     oncomplete="PF('tkaDialog').hide()"
+                                                     update=":allform:tka_table" ajax='true'/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </p:dialog>  
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

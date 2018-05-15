@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <aside class="main-sidebar">
+        <!-- sidebar: style can be found in sidebar.less -->
+        <h:form>
+            <section class="sidebar">
+                <!-- Sidebar user panel -->
+                <div class="user-panel">
+                    <div class="pull-left image">
+                        <ui:fragment rendered="#{globalBean.urlLogoKkks eq 'placeholder'}">
+                            <h:graphicImage name="img/placeholder.png"
+                                            class="img-circle" alt="User Image" />
+                        </ui:fragment>
+                        <ui:fragment rendered="#{globalBean.urlLogoKkks ne 'placeholder'}">
+                            <img src="#{globalBean.urlLogoKkks}"
+                                 class="img-circle" alt="User Image" />
+                        </ui:fragment>
+                    </div>
+                    <div class="pull-left info">
+                        <p>#{authorization.username}</p>
+                    </div>
+                </div>
+
+                <!-- sidebar menu: : style can be found in sidebar.less -->
+                <ul class="sidebar-menu">
+                    <li class="header">Menu Pilihan</li>
+                    <li>
+                        <p:commandLink id="beranda" action="#{globalBean.beranda}" ajax="false">
+                            <i class="fa fa-home"></i>
+                            <span><h:outputText value="Beranda"/></span>
+                        </p:commandLink>
+                    </li>
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-file-text-o"></i>
+                            <span><h:outputText value="Data Tenaga Kerja"/></span> <i class="fa fa-angle-left pull-right"></i>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li>    
+                                <p:commandLink id="tki_list" action="#{globalBean.listTki}" ajax="false">
+                                    <i class="fa fa-group"></i>
+                                    <span><h:outputText value="TKI"/></span>
+                                </p:commandLink>
+                            </li>
+                            <li>    
+                                <p:commandLink id="tka_list" action="#{globalBean.listTka}" ajax="false">
+                                    <i class="fa fa-group"></i>
+                                    <span><h:outputText value="TKA"/></span>
+                                </p:commandLink>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-file-text-o"></i>
+                            <span><h:outputText value="RPTK"/></span> <i class="fa fa-angle-left pull-right"></i>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li>    
+                                <p:commandLink id="rptk_list" action="#{globalBean.listRptk}" ajax="false">
+                                    <i class="fa fa-file-text-o"></i>
+                                    <span><h:outputText value="Daftar RPTK"/></span>
+                                </p:commandLink>
+                            </li>
+                            <li>    
+                                <p:commandLink id="nota_list" action="#{globalBean.listNota}" ajax="false">
+                                    <i class="fa fa-file-text-o"></i>
+                                    <span><h:outputText value="Nota Penjelasan"/></span>
+                                </p:commandLink>
+                            </li>
+                            <!--                            <li>    
+                                                            <p:commandLink id="jabatan_list" action="{globalBean.listJabatan}" ajax="false">
+                                                                <i class="fa fa-file-text-o"></i>
+                                                                <span><h:outputText value="Jabatan"/></span>
+                                                            </p:commandLink>
+                                                        </li>
+                                                        <li>    
+                                                            <p:commandLink id="pelatihan_list" action="{globalBean.listPelatihan}" ajax="false">
+                                                                <i class="fa fa-file-text-o"></i>
+                                                                <span><h:outputText value="Program Pelatihan"/></span>
+                                                            </p:commandLink>
+                                                        </li>
+                                                        <li>    
+                                                            <p:commandLink id="struktur_list" action="{globalBean.listStruktur}" ajax="false">
+                                                                <i class="fa fa-file-text-o"></i>
+                                                                <span><h:outputText value="Rekap Struktur"/></span>
+                                                            </p:commandLink>
+                                                        </li>
+                                                        <li>    
+                                                            <p:commandLink id="pertukaran_list" action="{globalBean.listPertukaran}" ajax="false">
+                                                                <i class="fa fa-file-text-o"></i>
+                                                                <span><h:outputText value="Program Pertukaran"/></span>
+                                                            </p:commandLink>
+                                                        </li>-->
+                            <li>    
+                                <p:commandLink id="timesharing_list" action="#{globalBean.listTimesharing}" ajax="false">
+                                    <i class="fa fa-file-text-o"></i>
+                                    <span><h:outputText value="Time Sharing"/></span>
+                                </p:commandLink>
+                            </li>
+<!--                            <ui:fragment rendered="#{globalBean.getRole() == 'skk'}"> -->
+                            <ui:fragment>    
+                                <li>    
+                                    <p:commandLink id="kkks_list" action="#{globalBean.listKkks}" ajax="false">
+                                        <i class="fa fa-file-text-o"></i>
+                                        <span><h:outputText value="Manage KKKS"/></span>
+                                    </p:commandLink>
+                                </li>
+                                <li> 
+                                    <h:panelGroup rendered="#{globalBean.getRole() == 'skk'}"> 
+                                        <p:commandLink id="manage_user" action="#{globalBean.listUserkkks}" ajax="false">
+                                            <i class="fa fa-file-text-o"></i>
+                                            <span><h:outputText value="Manage Users"/></span>
+                                        </p:commandLink>
+                                    </h:panelGroup>
+                                </li>
+                            </ui:fragment>
+                        </ul>
+                    </li>
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-files-o"></i>
+                            <span><h:outputText value="Pengajuan RPTK"/></span> <i class="fa fa-angle-left pull-right"></i>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li>    
+                                <p:commandLink id="pengajuan_rptk" action="#{globalBean.pengajuanRPTK}" ajax="false">
+                                    <i class="fa fa-history"></i>
+                                    <span><h:outputText value="Riwayat Pengajuan"/></span>
+                                </p:commandLink>
+                            </li>
+                            <li>    
+                                <p:commandLink id="tambah_pengajuan_rptk" action="#{globalBean.tambahPengajuanRPTK}" ajax="false">
+                                    <i class="fa fa-plus-circle"></i>
+                                    <span><h:outputText value="Tambah Pengajuan"/></span>
+                                </p:commandLink>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-files-o"></i>
+                            <span><h:outputText value="Pengajuan IMTA"/></span> <i class="fa fa-angle-left pull-right"></i>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li>    
+                                <p:commandLink id="pengajuan_imta" action="#{globalBean.pengajuanIMTA}" ajax="false">
+                                    <i class="fa fa-history"></i>
+                                    <span><h:outputText value="Riwayat Pengajuan"/></span>
+                                </p:commandLink>
+                            </li>
+                            <li>    
+                                <p:commandLink id="tambah_pengajuan_imta" action="#{globalBean.tambahPengajuanIMTA}" ajax="false">
+                                    <i class="fa fa-plus-circle"></i>
+                                    <span><h:outputText value="Tambah Pengajuan"/></span>
+                                </p:commandLink>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <p:commandLink id="editor_pejabat" action="#{globalBean.editorPejabat}" ajax="false">
+                            <i class="fa fa-table"></i>
+                            <span><h:outputText value="Editor Pejabat"/></span>
+                        </p:commandLink>
+                    </li>
+                    
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-table"></i>
+                            <span><h:outputText value="Status Aktif Tenaga Kerja"/></span> <i class="fa fa-angle-left pull-right"></i>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li>
+                                <p:commandLink id="epo_tka" action="#{globalBean.epoTka}" ajax="false">
+                                    <i class="fa fa-table"></i>
+                                    <span><h:outputText value="TKA"/></span>
+                                </p:commandLink>
+                            </li>
+                            <li>
+                                <p:commandLink id="epo_tki" action="#{globalBean.epoTki}" ajax="false">
+                                    <i class="fa fa-table"></i>
+                                    <span><h:outputText value="TKI"/></span>
+                                </p:commandLink>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+        </h:form>
+    </aside>
+    <!--    <h:form>
+            <p:menu toggleable="true" style="background-color: transparent; padding: 10px; border-color: transparent">
+                <p:submenu label="Master Tenaga Kerja">
+                    <p:menuitem style="padding: 7px; background-color: white" value="TKI" id="tki_list" action="{globalBean.listTki}">
+                    </p:menuitem>
+                    <p:menuitem style="padding: 7px; background-color: white" value="TKA" id="tka_list" action="{globalBean.listTka}">
+                    </p:menuitem>
+                </p:submenu>
+                <p:submenu label="RPTK">
+                    <p:menuitem style="padding: 7px; background-color: white" value="Daftar RPTK" id="rptk_list" action="{globalBean.listRptk}">
+                    </p:menuitem>
+                    <p:menuitem style="padding: 7px; background-color: white" value="Nota Penjelasan" id="nota_list" action="{globalBean.listNota}">
+                    </p:menuitem>
+                    <p:menuitem style="padding: 7px; background-color: white" value="KKKS" id="kkks_list" action="{globalBean.listKkks}">
+                    </p:menuitem>
+                    <p:menuitem style="padding: 7px; background-color: white" value="Jabatan" id="jabatan_list" action="{globalBean.listJabatan}">
+                    </p:menuitem>
+                    <p:menuitem style="padding: 7px; background-color: white" value="Pelatihan" id="pelatihan_list" action="{globalBean.listPelatihan}">
+                    </p:menuitem>
+                    <p:menuitem style="padding: 7px; background-color: white" value="Rekap Struktur" id="struktur_list" action="{globalBean.listStruktur}">
+                    </p:menuitem>
+                    <p:menuitem style="padding: 7px; background-color: white" value="Pertukaran" id="pertukaran_list" action="{globalBean.listPertukaran}">
+                    </p:menuitem>
+                    <p:menuitem style="padding: 7px; background-color: white" value="Time Sharing" id="timesharing_list" action="{globalBean.listTimesharing}">
+                    </p:menuitem>
+                </p:submenu>
+                    <p:submenu label="Pengajuan RPTK">
+                    <p:menuitem style="padding: 7px; background-color: white" value="Riwayat Pengajuan RPTK" id="pengajuan_rptk" action="{globalBean.pengajuanRPTK}">
+                    </p:menuitem>
+                    <p:menuitem style="padding: 7px; background-color: white" value="Tambah Pengajuan" id="tambah_pengajuan_rptk" action="{globalBean.tambahPengajuanRPTK}">
+                    </p:menuitem>
+                        <p:menuitem style="padding: 7px; background-color: white" value="Upload Surat" id="upload_surat_rptk" action="{globalBean.uploadSuratRPTK}">
+                    </p:menuitem>
+                </p:submenu>
+                <p:submenu label="Pengajuan IMTA">
+                    <p:menuitem style="padding: 7px; background-color: white" value="Riwayat Pengajuan IMTA" id="pengajuan_imta" action="{globalBean.pengajuanIMTA}">
+                    </p:menuitem>
+                    <p:menuitem style="padding: 7px; background-color: white" value="Tambah Pengajuan" id="tambah_pengajuan_imta" action="{globalBean.tambahPengajuanIMTA}">
+                    </p:menuitem>
+                </p:submenu>
+                <p:submenu rendered="{globalBean.role eq 'skk'}" label="Administrator">
+                    <p:menuitem style="padding: 7px; background-color: white" value="Demografi" id="demografi" action="{globalBean.demografi}">
+                    </p:menuitem>
+                    <p:menuitem style="padding: 7px; background-color: white" value="User KKKS" id="userkkks_list" action="{globalBean.listUserkkks}">
+                    </p:menuitem>
+                    <p:menuitem style="padding: 7px; background-color: white" value="User admin" id="useradmin_list" action="{globalBean.listUseradmin}">
+                    </p:menuitem>
+                </p:submenu>
+            </p:menu>
+        </h:form>-->
+</html>

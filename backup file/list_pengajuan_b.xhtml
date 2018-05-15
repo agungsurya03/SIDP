@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:dv="http://java.sun.com/jsf/composite/divusi">
+    <ui:composition template="/templates/default/main.xhtml">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{evaluasiRptk.init()}" />
+            <f:event type="preRenderView" listener="#{riwayatRptkImta.init()}" />
+        </f:metadata>
+        <ui:define name="headerContent">
+            <h1>
+                Riwayat Pengajuan RPTK-IMTA
+            </h1>
+        </ui:define>
+        <ui:define name="content">
+            <ui:fragment rendered="#{not auth.checkRole('ROLE_PENUNJANG')}">
+                <h:form id="riwayatRptkForm">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="box box-danger">
+                                <div class="box-header with-border">
+                                    <h3 class="box-title">Riwayat Pengajuan RPTK</h3>
+                                    <div class="box-tools pull-right">
+                                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                                            <i class="fa fa-minus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div style="overflow-x: scroll">
+                                    <div class="box-body table-responsive" style="width: 1700px">
+                                        <p:dataTable var="item"
+                                                     styleClass="table table-hover table-bordered"
+                                                     value="#{evaluasiRptk.listPengajuan}" reflow="true" rows="10"
+                                                     paginatorPosition="bottom"
+                                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                     paginator="true" rowIndexVar="index"
+                                                     tableStyle="table-layout:auto">
+                                            <p:column sortBy="#{item.noPengajuan}" filterBy="#{item.noPengajuan}" filterMatchMode="contains">
+                                                <f:facet name="header">
+                                                    No Pengajuan
+                                                </f:facet>
+                                                #{item.noPengajuan}
+                                            </p:column>
+                                            <p:column sortBy="#{item.tglSurat}" filterBy="#{item.tglSurat}" filterMatchMode="contains">
+                                                <f:facet name="header">
+                                                    Tanggal Surat
+                                                </f:facet>
+                                                #{evaluasiRptk.formatedDate(item.tglSurat)}                                            
+                                            </p:column>
+                                            <p:column sortBy="#{item.noSurat}" filterBy="#{item.noSurat}" filterMatchMode="contains">
+                                                <f:facet name="header">
+                                                    No. Surat
+                                                </f:facet>
+                                                #{item.noSurat}    					
+                                            </p:column>
+                                            <p:column sortBy="#{item.perihalSurat}" filterBy="#{item.perihalSurat}" filterMatchMode="contains">
+                                                <f:facet name="header">
+                                                    Perihal
+                                                </f:facet>
+                                                #{item.perihalSurat}    					
+                                            </p:column>
+                                            <p:column sortBy="#{item.kkks}" filterBy="#{item.kkks}" filterMatchMode="contains">
+                                                <f:facet name="header">
+                                                    KKKS
+                                                </f:facet>
+                                                #{item.kkks}                       
+                                            </p:column>
+                                            <p:column sortBy="#{item.jenisKkks}" filterBy="#{item.jenisKkks}" filterMatchMode="contains">
+                                                <f:facet name="header">
+                                                    Jenis KKKS
+                                                </f:facet>
+                                                #{item.jenisKkks}                      
+                                            </p:column>
+                                            <p:column sortBy="#{item.type}" filterBy="#{item.type}" filterMatchMode="contains">
+                                                <f:facet name="header">
+                                                    Type
+                                                </f:facet>
+                                                #{item.type}
+                                            </p:column>
+                                            <p:column style="text-align: center;" sortBy="#{item.status}" filterBy="#{item.status}" filterMatchMode="contains">
+                                                <f:facet name="header">
+                                                    Status
+                                                </f:facet>
+                                                #{item.status}                     
+                                            </p:column>
+                                            <p:column style="text-align: center;" sortBy="#{item.oleh}" filterBy="#{item.oleh}" filterMatchMode="contains">
+                                                <f:facet name="header">
+                                                    Oleh
+                                                </f:facet>
+                                                #{item.oleh} (#{item.updatedBy})
+                                            </p:column>
+                                            <p:column style="text-align: center;" sortBy="#{item.createdDate}" filterBy="#{item.createdDate}" filterMatchMode="contains">
+                                                <f:facet name="header">
+                                                    Waktu Pengajuan
+                                                </f:facet>
+                                                <h:outputText value="#{item.createdDate}">
+                                                    <f:convertDateTime pattern="dd/MM/yyyy hh:mm:ss" />
+                                                </h:outputText>
+                                            </p:column>
+                                            <p:column style="text-align: center;">
+                                                <f:facet name="header">
+                                                    Posisi Tenaga Kerja
+                                                </f:facet>
+                                                <h:outputLink value="#{util.hostUrl}/modules/rptk/pengajuan/posisi_rptk.xhtml" class="btn-link">
+                                                    Lihat
+                                                    <f:param name="idRptk" value="#{item.rptk.id}" />
+                                                </h:outputLink>
+                                            </p:column>
+                                            <p:column style="text-align: center;">
+                                                <f:facet name="header">
+                                                    Surat
+                                                </f:facet>
+                                                <h:commandButton actionListener="#{evaluasiRptk.handleClickSurat(item.noPengajuan,item.suratPernyataan,item.rekomendasiDitjenMigas,item.rekomendasiKemenakertrans)}" value="Lihat" class="btn btn-link" 
+                                                                 />
+                                            </p:column>
+                                            <p:column style="text-align: center;">
+                                                <f:facet name="header">
+                                                    Detail
+                                                </f:facet>
+                                                <h:outputLink value="#{util.hostUrl}/modules/rptk/evaluasi/proses.xhtml" 
+                                                              class="btn-link">
+                                                    <f:param name="idPengajuan" value="#{item.idPengajuan}"/>
+                                                    <f:param name="noPengajuan" value="#{item.noPengajuan}" />
+                                                    <f:param name="parentRptk" value="#{item.parentRptk}" />
+                                                    <f:param name="setujuButton" value="#{item.setujuButton}" />
+                                                    <f:param name="kembalikanKeKKKSButton" value="#{false}" /> 
+                                                    <f:param name="kembalikanKeStafButton" value="#{false}" /> 
+                                                    <f:param name="selesaiSebagianButton" value="#{false}" /> 
+                                                    <f:param name="selesaiFinalButton" value="#{false}" />  
+                                                    <f:param name="history" value="true"/>
+                                                    Lihat
+                                                </h:outputLink>
+                                                <!--<h:commandButton actionListener="#/{evaluasiRptk.goToDetail(item.idPengajuan)}" value="Lihat" class="btn btn-link"/>-->
+                                                <!--                                                    <f:param name="idPengajuan" value="#/{item.idPengajuan}" />
+                                                                                                    <f:param name="noPengajuan" value="#/{item.noPengajuan}" /> -->
+                                            </p:column>
+                                        </p:dataTable>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                	
+                    </div>
+                </h:form>
+            </ui:fragment>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="box box-danger">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Riwayat Pengajuan IMTA</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                                    <i class="fa fa-minus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div style="overflow-x: scroll">
+                            <div class="box-body table-responsive" style="width: 1700px">
+                                <p:dataTable var="item"
+                                             styleClass="table table-hover table-bordered"
+                                             value="#{riwayatRptkImta.listRiwayatImta}" reflow="true" rows="50"
+                                             paginatorPosition="bottom"
+                                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                             paginator="true" rowIndexVar="index"
+                                             tableStyle="table-layout:auto">
+                                    <p:column sortBy="#{item.noPengajuan}" filterBy="#{item.noPengajuan}" filterMatchMode="contains">
+                                        <f:facet name="header">
+                                            No Pengajuan
+                                        </f:facet>
+                                        #{item.noPengajuan}
+                                    </p:column>
+                                    <p:column sortBy="#{item.tglSurat}" filterBy="#{item.tglSurat}" filterMatchMode="contains">
+                                        <f:facet name="header">
+                                            Tanggal Surat
+                                        </f:facet>
+                                        #{evaluasiRptk.formatedDate(item.tglSurat)}
+                                    </p:column>
+                                    <p:column sortBy="#{item.noSurat}" filterBy="#{item.noSurat}" filterMatchMode="contains">
+                                        <f:facet name="header">
+                                            No. Surat
+                                        </f:facet>
+                                        #{item.noSurat}    					
+                                    </p:column>
+                                    <p:column sortBy="#{item.perihal}" filterBy="#{item.perihal}" filterMatchMode="contains">
+                                        <f:facet name="header">
+                                            Perihal
+                                        </f:facet>
+                                        #{item.perihal}    					
+                                    </p:column>
+                                    <p:column sortBy="#{item.namaKkks}" filterBy="#{item.tglSurat}" filterMatchMode="contains">
+                                        <f:facet name="header">
+                                            KKKS
+                                        </f:facet>
+                                        #{item.namaKkks}                       
+                                    </p:column>
+                                    <p:column sortBy="#{item.nama}" filterBy="#{item.nama}" filterMatchMode="contains">
+                                        <f:facet name="header">
+                                            Nama
+                                        </f:facet>
+                                        #{item.nama}                        
+                                    </p:column>
+                                    <p:column sortBy="#{item.posisi}" filterBy="#{item.posisi}" filterMatchMode="contains">
+                                        <f:facet name="header">
+                                            Posisi
+                                        </f:facet>
+                                        #{item.posisi}                        
+                                    </p:column>
+                                    <p:column sortBy="#{item.status}" filterBy="#{item.status}" filterMatchMode="contains">
+                                        <f:facet name="header">
+                                            Status TKA
+                                        </f:facet>
+                                        #{riwayatRptkImta.findStatus(item.idTka)}                        
+                                    </p:column>
+                                    <p:column sortBy="#{item.type}" filterBy="#{item.type}" filterMatchMode="contains">
+                                        <f:facet name="header">
+                                            Type
+                                        </f:facet>
+                                        #{item.type}
+                                    </p:column>
+                                    <p:column  sortBy="#{item.status}" style="text-align: center;" filterBy="#{item.status}" filterMatchMode="contains">
+                                        <f:facet name="header">
+                                            Status Pengajuan
+                                        </f:facet>
+                                        #{item.status}                     
+                                    </p:column>
+                                    <p:column style="text-align: center;" sortBy="#{item.oleh}" filterBy="#{item.oleh}" filterMatchMode="contains">
+                                        <f:facet name="header">
+                                            Oleh
+                                        </f:facet>
+                                        #{item.oleh} (#{item.updatedBy})
+                                    </p:column>
+                                    <p:column sortBy="#{item.createdDate}" style="text-align: center;" filterBy="#{item.createdDate}" filterMatchMode="contains">
+                                        <f:facet name="header">
+                                            Waktu Pengajuan
+                                        </f:facet>
+                                        <h:outputText value="#{item.createdDate}">
+                                            <f:convertDateTime pattern="dd/MM/yyyy hh:mm:ss" />
+                                        </h:outputText>
+                                    </p:column>
+                                    <p:column style="text-align: center;">
+                                        <f:facet name="header">
+                                            Aksi
+                                        </f:facet>
+                                        <h:outputLink value="#{util.hostUrl}/modules/imta/pengajuan/detail.xhtml" class="btn-link">
+                                            Lihat
+                                            <f:param name="idImta" value="#{item.idImta}" />
+                                        </h:outputLink>
+                                    </p:column>
+                                </p:dataTable>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <h:form>
+                <p:dialog header="Surat - #{evaluasiRptk.selectedNoPengajuan}" widgetVar="suratDialog" modal="true" minHeight="200" minWidth="300">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <h:outputText value="Surat Pernyataan"/>
+                                </div>
+                                <div class="col-sm-6">
+                                    <h:commandButton class="btn btn-link"
+                                                     actionListener="#{evaluasiRptk.downloadFile(evaluasiRptk.selectedFullPathSuratPernyataan)}"
+                                                     value="#{evaluasiRptk.selectedNameSuratPernyataan}"
+                                                     rendered="#{evaluasiRptk.selectedNameSuratPernyataan ne '-'}">
+                                    </h:commandButton>
+
+                                    <h:outputText value="-" rendered="#{evaluasiRptk.selectedNameSuratPernyataan eq '-'}"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <h:outputText value="Surat Rekomendasi Ditjen Migas"/>
+                                </div>
+                                <div class="col-sm-6">
+                                    <h:commandButton class="btn btn-link"
+                                                     actionListener="#{evaluasiRptk.downloadFile(evaluasiRptk.selectedFullPathSuratRekomendasiDitjenMigas)}"
+                                                     value="#{evaluasiRptk.selectedNameSuratRekomendasiDitjenMigas}"
+                                                     rendered="#{evaluasiRptk.selectedNameSuratRekomendasiDitjenMigas ne '-'}">
+                                    </h:commandButton>
+                                    <h:outputText value="-" rendered="#{evaluasiRptk.selectedNameSuratRekomendasiDitjenMigas eq '-'}"/>
+                                </div>
+                            </div><div class="row">
+                                <div class="col-sm-6">
+                                    <h:outputText value="SK Kemenakertrans"/>
+                                </div>
+                                <div class="col-sm-6">
+                                    <h:commandButton class="btn btn-link"
+                                                     actionListener="#{evaluasiRptk.downloadFile(evaluasiRptk.selectedFullPathSuratRekomendasiKemenakertrans)}"
+                                                     value="#{evaluasiRptk.selectedNameSuratRekomendasiKemenakertrans}"
+                                                     rendered="#{evaluasiRptk.selectedNameSuratRekomendasiKemenakertrans ne '-'}">
+                                    </h:commandButton>
+                                    <h:outputText value="-" rendered="#{evaluasiRptk.selectedNameSuratRekomendasiKemenakertrans eq '-'}"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </p:dialog>  
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="rptk-frontend-1">
+        <wb-resource deploy-path="/" source-path="/WebContent"/>
+        <property name="context-root" value="rptk-frontend-1"/>
+        <property name="java-output-path" value="/rptk-frontend-1/bin"/>
+    </wb-module>
+</project-modules>

@@ -1,0 +1,1 @@
+rowStyleClass="#{ (item.status == 'Disetujui' || (item.pengisi == 'TKI' and item.status == null )) ? 'cssSetuju' : (item.status == 'Belum Disetujui' ? 'cssBelum' : (item.status == 'Ditolak' ? 'cssTolak' : '' ) ) }"

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:dv="http://java.sun.com/jsf/composite/divusi">
+    <ui:composition template="/templates/default/main.xhtml">
+        <ui:define name="headerContent">
+            <h1>
+                Editor Posisi Tenaga Kerja
+            </h1>
+        </ui:define>
+        <ui:define name="content">
+            <h:form id="formBody">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="box box-info">
+                            <div class="box-header with-border">
+                                <h3 class="box-title"> Download dan Upload Posisi Tenaga Kerja </h3>
+                                <p:growl id="growl" showDetail="true" sticky="true" />
+                                <div class="box-tools pull-right">
+                                    <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                                        <i class="fa fa-minus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="box-header">
+                                <h:form target="_blank">
+                                    <p:commandButton value="Export Template" actionListener="#{editorPosisi.exportExcel()}" 
+                                                     ajax="false" styleClass="btn-xs">
+                                        <p:fileDownload value="#{editorPosisi.exportFile}"/>
+                                    </p:commandButton>
+                                </h:form>
+                            </div>
+                            <div class="box-body table-responsive">
+                                <p:dataTable id="tblTkiMirip"
+                                             var="item"
+                                             styleClass="table table-hover table-bordered"
+                                             value="#{editorPosisi.epList}"
+                                             reflow="true"
+                                             rows="10"
+                                             paginatorPosition="bottom"
+                                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                             paginator="true"
+                                             rowIndexVar="index"
+                                             tableStyle="table-layout:auto">
+                                    <p:columnGroup type="header">
+                                        <p:row>
+                                            <p:column headerText="No" />
+                                            <p:column headerText="Nama Jabatan" sortBy="#{item.namaJabatan}" />
+                                            <p:column headerText="Struktur" sortBy="#{item.struktur}" />
+                                            <p:column headerText="Posisi" sortBy="#{item.posisi}"/>
+                                            <p:column headerText="NIP" sortBy="#{item.nip}"/>
+                                            <p:column headerText="Nama" sortBy="#{item.nama}"/>
+                                            <p:column headerText="Detail" />
+                                        </p:row>
+                                    </p:columnGroup>
+                                    <p:column>
+                                        <f:facet name="header">
+                                            No
+                                        </f:facet>
+                                        #{index+1}
+                                    </p:column>
+                                    <p:column sortBy="#{item.namaJabatan}">
+                                        <f:facet name="header">
+                                            Nama Jabatan
+                                        </f:facet>
+                                        #{item.namaJabatan}
+                                    </p:column>
+                                    <p:column sortBy="#{item.struktur}">
+                                        <f:facet name="header">
+                                            Struktur
+                                        </f:facet>
+                                        #{item.struktur}
+                                    </p:column>
+                                    <p:column sortBy="#{item.posisi}">
+                                        <f:facet name="header">
+                                            Posisi
+                                        </f:facet>
+                                        #{item.posisi}
+                                    </p:column>
+                                    <p:column sortBy="#{item.nip}">
+                                        <f:facet name="header">
+                                            NIP
+                                        </f:facet>
+                                        #{item.nip}
+                                    </p:column>
+                                    <p:column sortBy="#{item.nama}">
+                                        <f:facet name="header">
+                                            Nama
+                                        </f:facet>
+                                        #{item.nama}
+                                    </p:column>
+                                    <p:column rendered="#{!(auth.oleh() eq 'Guest')}">
+                                        <f:facet name="header">
+                                            Detail
+                                        </f:facet>
+                                        <h:link value="Detail" outcome="detail_jabatan" >
+                                            <f:param name="idjabatan" value="#{item.idPosisi}" />
+                                        </h:link>
+                                        <!--                                        <h:commandLink id="edit_jabatan"
+                                                                                               class="pull-right"
+                                                                                               value="Edit"
+                                                                                               actionListener="#/{editorPosisi.editPosisi(item.idPosisi)}"/>-->
+                                        <h:link value="Edit" 
+                                                class="pull-right"
+                                                outcome="edit" >
+                                            <f:param name="id" value="#{item.idPosisi}" />
+                                        </h:link>
+                                    </p:column>
+                                </p:dataTable>
+                            </div>
+
+                            <p:fileUpload value="#{editorPosisi.importFile}"
+                                          fileUploadListener="#{editorPosisi.regenerate_data}" 
+                                          label="Import File"
+                                          skinSimple="true"
+                                          class="btn btn-sm"
+                                          auto="true"
+                                          immediate="true" update="formBody:tblTkiMirip formBody:growl" 
+                                          sizeLimit="250000000" allowTypes="/(\.|\/)(xls)$/"/>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+
+            <h:form id="fdialog">
+                <p:dialog header="Link Tenaga Kerja" widgetVar="tkiDialog" modal="true" minHeight="200" minWidth="300">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="row form-group">
+                                <div class="col-sm-12">
+                                    <h:outputText value="#{editorPosisi.ep.idPosisi} #{editorPosisi.ep.idPosisi} #{editorPosisi.ep.idPosisi} (#{editorPosisi.ep.idPosisi})"/>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col-sm-12">
+                                    <h:outputText value="#{editorPosisi.ep.idPosisi} #{editorPosisi.ep.idPosisi} #{editorPosisi.ep.idPosisi} (#{editorPosisi.ep.idPosisi})"/>
+                                </div>
+                            </div>
+                            <div class="box-footer">
+                                <div class="pull-right">
+                                    <p:commandButton styleClass="btn btn-xs"
+                                                     value="Link TKI"
+                                                     action="#{tkPrediksiMirip.link()}"
+                                                     oncomplete="PF('tkiDialog').hide()"
+                                                     update="formBody:tblTkiMirip"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </p:dialog>  
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>
